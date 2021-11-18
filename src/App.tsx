@@ -1,7 +1,7 @@
-import { greet } from "./utils/greet";
+import { ToDoList } from "./components/ToDoList";
 
 function App(): JSX.Element {
-  return <h1>{greet("World")}</h1>;
+  return <ToDoList />;
 }
 
 export default App;
