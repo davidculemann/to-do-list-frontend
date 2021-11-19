@@ -1,5 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export function ToDoList(): JSX.Element {
   const baseUrl =
@@ -15,8 +17,9 @@ export function ToDoList(): JSX.Element {
   }
 
   const [task, setTask] = useState<ITask | null>(null);
-  const [showForm, setShowForm] = useState<number>(0);
-  const [newTask, setNewTask] = useState<ITask | null>(null);
+  const [enterName, setEnterName] = useState<string>("");
+  const [dueDate, setDueDate] = useState<Date>(new Date()); //Date | [Date | null, Date | null] | null
+  const [showForm, setShowForm] = useState<boolean>(false);
 
   async function handleGetTask() {
     fetch(`${baseUrl}/items/20`) //or "http://localhost:4000/items/"
@@ -28,26 +31,40 @@ export function ToDoList(): JSX.Element {
     axios.post(`${baseUrl}/items`, newTask);
   }
 
-  const handleShowForm = () => (showForm ? setShowForm(0) : setShowForm(1));
+  const handleShowForm = () => setShowForm(!showForm);
+
+  function compileForm(name: string, due: Date): Partial<ITask> {
+    const created = new Date();
+    return { name: name, created: created, due: due };
+  }
 
   return (
     <div>
       <button onClick={handleShowForm}>{showForm ? "-" : "+"}</button>
-      <h1>Tasks will go here</h1>
+      <h1>To do tracker app</h1>
       <button onClick={handleGetTask}>load a task</button>
 
       {/* Make the form submittable by a button or enter, add a date selector, and make the form stitch up all data into a task.json (helper function) which is then posted*/}
-      {showForm > 0 && (
+      {showForm && (
         <form>
           <input
             type="object"
             onChange={(e) => {
-              setNewTask(JSON.parse(e.target.value));
+              setEnterName(e.target.value);
             }}
-            placeholder="enter json task"
+            placeholder="enter task name"
           ></input>
 
-          <button onClick={() => handlePostTask(newTask)}>create a task</button>
+          <DatePicker
+            selected={dueDate}
+            onChange={(date: Date | null) => date && setDueDate(date)}
+          />
+
+          <button
+            onClick={() => handlePostTask(compileForm(enterName, dueDate))}
+          >
+            create a task
+          </button>
         </form>
       )}
       {task && <p>{task.name} is the task</p>}
