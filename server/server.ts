@@ -14,6 +14,11 @@ dotenv.config();
 
 const PORT_NUMBER = process.env.PORT ?? 4000;
 
+export interface Task {
+  name: string;
+  due: Date;
+}
+
 //===================ROUTES==========================
 
 // app.get("/", (req, res) => {
@@ -24,20 +29,33 @@ const PORT_NUMBER = process.env.PORT ?? 4000;
 // GET /items
 app.get("/todos", async (req, res) => {
   try {
-    console.log(req.body)
-  } catch (err) {
-    console.error(err.message)
+    const allToDos = await client.query("SELECT * FROM todos");
+    res.json(allToDos.rows)
+  } catch (error) {
+    console.error(error.message)
+  }
+});
+
+app.get("/todos/:id", async (req, res) => {
+  try {
+    const todoId = req.params.id
+    const toDoById = await client.query("SELECT * FROM todos WHERE id = $1", [todoId]);
+    res.json(toDoById.rows)
+  } catch (error) {
+    console.error(error.message)
   }
 });
 
 // POST /items
-// app.post<{}, {}, Task>("/todos", async (req, res) => {
-//   // to be rigorous, ought to handle non-conforming request bodies
-//   // ... but omitting this as a simplification
-//   const postData = req.body;
-//   const createdSignature = addTask(postData);
-//   res.status(201).json(createdSignature);
-// });
+app.post<{}, {}, Task>("/todos", async (req, res) => {
+  try {
+    const postData = req.body;
+    console.log(postData)
+  }
+  catch (error) {
+    console.error(error.message)
+  }
+});
 
 app.listen(PORT_NUMBER, () => {
   console.log(`Server is listening on port ${PORT_NUMBER}!`);
