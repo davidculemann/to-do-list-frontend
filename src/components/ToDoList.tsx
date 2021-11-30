@@ -4,10 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 export function ToDoList(): JSX.Element {
-  const baseUrl =
-    process.env.NODE_ENV === "production"
-      ? "https://to-do-list-davidculemann.herokuapp.com"
-      : "http://localhost:4000";
+  const baseUrl = "https://todo-app-davidculemann.herokuapp.com";
 
   interface ITask {
     name: string;
@@ -22,9 +19,14 @@ export function ToDoList(): JSX.Element {
   const [showForm, setShowForm] = useState<boolean>(false);
 
   async function handleGetTask() {
-    fetch(`${baseUrl}/items/20`) //or "http://localhost:4000/items/"
-      .then((response) => response.json())
-      .then((jsonBody: ITask) => setTask(jsonBody));
+    // try {
+    const response = await fetch(`${baseUrl}/todos/1`);
+    const jsonData = await response.json();
+    setTask(jsonData);
+
+    //   } catch (error: unknown) {
+    //     console.log(error.message)
+    //   }
   }
 
   async function handlePostTask(newTask: Partial<ITask> | null) {
