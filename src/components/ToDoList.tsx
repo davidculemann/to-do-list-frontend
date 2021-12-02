@@ -7,10 +7,11 @@ export function ToDoList(): JSX.Element {
   const baseUrl = "https://todo-app-davidculemann.herokuapp.com";
 
   interface ITask {
+    id: number;
     name: string;
     created: Date;
     due: Date;
-    completed: number;
+    status: number;
   }
 
   const [task, setTask] = useState<ITask | null>(null);
