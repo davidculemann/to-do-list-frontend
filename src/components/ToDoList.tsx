@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -25,7 +25,6 @@ export function ToDoList(): JSX.Element {
       }
     }
   }
-
   async function handleGetAllTodos() {
     try {
       const response = await fetch(`${baseUrl}/todos`);
@@ -38,6 +37,10 @@ export function ToDoList(): JSX.Element {
       }
     }
   }
+
+  useEffect(() => {
+    handleGetAllTodos();
+  }, []);
 
   async function handlePostTask(newTask: Partial<ITask> | null) {
     axios.post(`${baseUrl}/todos`, newTask);
