@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ITask, toDoLister } from "./toDoLister";
+import { ITask, ToDoLister } from "./ToDoLister";
 
 export function ToDoList(): JSX.Element {
   const baseUrl = "https://todo-app-davidculemann.herokuapp.com";
@@ -84,7 +84,11 @@ export function ToDoList(): JSX.Element {
         </form>
       )}
       {task && <p>{task.name} is the task</p>}
-      {todoList.map((e) => toDoLister(e))}
+      <div>
+        {todoList.map((todoE) => (
+          <ToDoLister todo={todoE} key={todoE.id} />
+        ))}
+      </div>
     </div>
   );
 }

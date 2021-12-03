@@ -1,0 +1,8 @@
+.todo {
+  border-color: black;
+  border-width: 5px;
+  border-radius: 10px;
+  margin: 1rem;
+  padding: 1rem;
+  box-shadow: 2px 4px 25px rgba(0, 0, 0, 0.1);
+}
