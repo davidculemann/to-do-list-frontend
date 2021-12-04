@@ -1,8 +1,8 @@
-import { TodoList } from "./components/TodoList";
+import { TodoApp } from "./components/TodoApp";
 import "./App.css";
 
 function App(): JSX.Element {
-  return <TodoList />;
+  return <TodoApp />;
 }
 
 export default App;

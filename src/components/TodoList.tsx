@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-//import { ITask, TodoItem } from "./TodoItem";
 
 export interface ITask {
   id: number;
@@ -16,32 +15,32 @@ interface TodoProps {
   todo: ITask;
 }
 
-export function TodoList(): JSX.Element {
+interface ListProps {
+  status: boolean;
+}
+
+export function TodoList(props: ListProps): JSX.Element {
   const baseUrl = "https://todo-app-davidculemann.herokuapp.com";
 
   // const [task, setTask] = useState<ITask | null>(null);
   const [todoList, setTodoList] = useState<ITask[]>([]);
   const [enterName, setEnterName] = useState<string>("");
-  const [checked, setChecked] = useState<boolean>(false);
-  const [dueDate, setDueDate] = useState<Date>(new Date()); //Date | [Date | null, Date | null] | null
+  const [queRender, setQueRender] = useState<boolean>(false);
+  const [dueDate, setDueDate] = useState<Date>(new Date());
   const [showForm, setShowForm] = useState<boolean>(false);
 
-  // async function handleGetTodo() {
-  //   try {
-  //     const response = await fetch(`${baseUrl}/todos/2`);
-  //     const jsonData = await response.json();
-  //     console.log(jsonData.data.todoById.rows[0]);
-  //     setTask(jsonData.data.todoById.rows[0]);
-  //   } catch (err: unknown) {
-  //     if (err instanceof Error) {
-  //       console.error(err.message);
-  //     }
-  //   }
-  // }
+  const todosToShow = todoList.filter(
+    (e) => e.status === 1 || (e.status === 0 && props.status === true)
+  );
 
   const handleToggleStatus = async (id: number) => {
-    axios.put(`${baseUrl}/todos/status/${id}`);
-    setChecked(!checked);
+    await axios.put(`${baseUrl}/todos/status/${id}`);
+    setQueRender(!queRender);
+  };
+
+  const handleDelete = async (id: number) => {
+    await axios.delete(`${baseUrl}/todos/${id}`);
+    setQueRender(!queRender);
   };
 
   async function handleGetAllTodos() {
@@ -59,10 +58,11 @@ export function TodoList(): JSX.Element {
 
   useEffect(() => {
     handleGetAllTodos();
-  }, [checked]);
+  }, [queRender]);
 
   async function handlePostTask(newTask: Partial<ITask> | null) {
-    axios.post(`${baseUrl}/todos`, newTask);
+    await axios.post(`${baseUrl}/todos`, newTask);
+    setQueRender(!queRender);
   }
 
   const handleShowForm = () => setShowForm(!showForm);
@@ -83,7 +83,22 @@ export function TodoList(): JSX.Element {
             checked={props.todo.status === 0}
             onChange={() => handleToggleStatus(props.todo.id)}
           />
-        </label>
+        </label>{" "}
+        |{" "}
+        {/* <BsTrashFill
+          className="trashIcon"
+          onClick={() => handleDelete(props.todo.id)}
+        /> */}
+        <div className="trash-box" onClick={() => handleDelete(props.todo.id)}>
+          <div className="trash"></div>
+          <div className="trash-top"></div>
+          <div className="trash-btm">
+            <div className="trash-lines">
+              <div className="trash-line"></div>
+              <div className="trash-line"></div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -91,7 +106,6 @@ export function TodoList(): JSX.Element {
   return (
     <div>
       <button onClick={handleShowForm}>{showForm ? "-" : "+"}</button>
-      <h1 className="header">To do tracker app</h1>
       {showForm && (
         <form>
           <input
@@ -115,7 +129,7 @@ export function TodoList(): JSX.Element {
         </form>
       )}
       <div>
-        {todoList.map((todoE) => (
+        {todosToShow.map((todoE) => (
           <TodoItem todo={todoE} key={todoE.id} />
         ))}
       </div>
